@@ -35,13 +35,7 @@ def before_trading_start(context, data):
 
 
 def rebalance(context, data):
-    log.debug(
-        data.history(
-            symbol('FV1'),
-            fields='price',
-            bar_count=1,
-            frequency='1d')
-    )
+    log.debug(data.current(symbol('FV1'), fields='price'))
     
     order_target_percent(symbol('FV1'), -1.0)
 

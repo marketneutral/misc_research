@@ -48,5 +48,19 @@ def rebalance(context, data):
 
 
 def record_daily(context, data):
-    risk = calc_portfolio_risk(context, data, value_at_risk, hist_days=252)
+    risk = calc_portfolio_risk(
+        context,
+        data,
+        value_at_risk,
+        hist_days=252,
+        alpha=0.95
+    )
+    risk99 = calc_portfolio_risk(
+        context,
+        data,
+        value_at_risk,
+        hist_days=252,
+        alpha=0.99
+    )
     record(daily_95_1d_var = risk)
+    record(daily_99_1d_var = risk99)

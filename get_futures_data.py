@@ -5,14 +5,17 @@ from six import iteritems
 
 items = {
     'CHRIS/CME_US1': 'US1.csv',
+    'CHRIS/CME_US2': 'US2.csv',
     'CHRIS/CME_TY1': 'TY1.csv',
     'CHRIS/CME_FV1': 'FV1.csv',
     'CHRIS/CME_TU1': 'TU1.csv'
 }    
 
+quandl.ApiConfig.api_key = "TDCy_PPtqVsQCjxBJpsb"
+
 for k,v in items.iteritems():
     mydata = quandl.get(k)
-    mydata.rename(columns={'Last':'Close'}, inplace=True)
+    mydata.rename(columns={'Settle':'Close'}, inplace=True)
     mydata.columns = map(str, mydata.columns)
     mydata.columns = map(str.lower, mydata.columns)
     mydata = mydata[['open', 'high', 'low', 'close', 'volume']]

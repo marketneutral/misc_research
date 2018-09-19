@@ -1,4 +1,4 @@
-#from macrostrats.zipline_etc.utils import NoSlippage
+from macrostrats.zipline_etc.utils import NoSlippage
 
 from zipline.api import (
     date_rules,
@@ -10,7 +10,7 @@ from zipline.api import (
 )
 
 def initialize(context):
-#    set_slippage(NoSlippage())
+    set_slippage(NoSlippage())
     schedule_function(
         func=rebalance,
         date_rule=date_rules.month_end(),
@@ -18,4 +18,4 @@ def initialize(context):
     )
 
 def rebalance(context, data):
-    order_target_percent(symbol('XYZ'), -1.0)
+    order_target_percent(symbol('US1'), -1.0)

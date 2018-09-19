@@ -1,0 +1,11 @@
+name: env_zipline
+channels:
+- conda-forge
+- Quantopian
+dependencies:
+- python=3.5
+- Quantopian::zipline==1.3.0
+- pandas-datareader==0.2.1
+- pip:
+  - ipykernel
+  - graphviz

@@ -1,15 +1,24 @@
+import pandas as pd
+from zipline.data.bundles import register
+from zipline.data.bundles.csvdir import csvdir_equities
+
+
+#------------
+
 import datetime
 import os
 import numpy as np
 import pandas as pd
+from six import iteritems
 from tqdm import tqdm
 from trading_calendars import get_calendar
 
 from zipline.assets.futures import CME_CODE_TO_MONTH
 from zipline.data.bundles import core as bundles
 
-def csvdir_futures():
-    return CSVDIRFutures.ingest
+def csvdir_futures(tframes, csvdir):
+    import pdb; pdb.set_trace()
+    return CSVDIRFutures(tframes, csvdir).ingest
 
 
 class CSVDIRFutures:
@@ -18,8 +27,9 @@ class CSVDIRFutures:
     list of time frames and a path to the csvdir directory
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, tframes, csvdir):
+        self.tframes = tframes
+        self.csvdir = csvdirs
 
     def ingest(self,
                environ,
@@ -44,7 +54,9 @@ class CSVDIRFutures:
                        end_session,
                        cache,
                        show_progress,
-                       output_dir)
+                       output_dir,
+                       self.tframes,
+                       self.csvdir)
 
 
 
@@ -142,10 +154,13 @@ def futures_bundle(environ,
                    end_session,
                    cache,
                    show_progress,
-                   output_dir):
+                   output_dir,
+                   tframes=None,
+                   csvdir=None):
 
+    import pdb; pdb.set_trace()
     raw_data = load_data('/Users/jonathan/devwork/pricing_data/CME_2018')
-    asset_metadata = gen_asset_metadata(asset_data, False)
+    asset_metadata = gen_asset_metadata(raw_data, False)
 
     asset_db_writer.write(asset_metadata)
 
@@ -160,3 +175,45 @@ def futures_bundle(environ,
         ),
         show_progress=show_progress
     )
+
+
+
+
+
+
+
+#-----------
+
+
+
+
+
+
+
+
+register(
+    'futures',
+    csvdir_futures(
+        'daily',
+        '/Users/jonathan/devwork/pricing_data/CME_2018'
+    ),
+    calendar_name='CME',
+)
+
+
+start_session = pd.Timestamp('1991-01-02', tz='utc')
+end_session = pd.Timestamp('2017-12-29', tz='utc')
+
+#start_session = pd.Timestamp('2014-01-28', tz='utc')
+#end_session = pd.Timestamp('2014-02-07', tz='utc')
+
+register(
+#    'csvdir',
+    'treasury-futures',
+    csvdir_equities(
+        ["daily"],
+        '/Users/jonathan/devwork/misc_research/futures'
+    ),
+    start_session=start_session,
+    end_session=end_session
+)

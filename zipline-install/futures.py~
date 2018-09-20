@@ -1,0 +1,40 @@
+import os
+import numpy as np
+import pandas as pd
+
+def load_data(parent_dir):
+    """Given a parent_dir of cross-sectional daily files,
+       read in all the days and return a big dataframe.
+    """
+    
+    #list the files
+    filelist = os.listdir(parent_dir) 
+    #read them into pandas
+    df_list = [
+        pd.read_csv(os.path.join(parent_dir, file), parse_dates=[1]) for file in filelist
+    ]
+    #concatenate them together
+    big_df = pd.concat(df_list)
+    big_df.columns = map(str.lower, big_df.columns)
+    return big_df
+
+
+
+def gen_asset_metadata(data, show_progress, exchange='EXCH'):
+    if show_progress:
+        log.info('Generating asset metadata.')
+
+    data = data.groupby(
+        by='symbol'
+    ).agg(
+        {'date': [np.min, np.max]}
+    )
+    data.reset_index(inplace=True)
+    data['start_date'] = data.date.amin
+    data['end_date'] = data.date.amax
+    del data['date']
+    data.columns = data.columns.get_level_values(0)
+
+    data['exchange'] = exchange
+    data['auto_close_date'] = data['end_date'].values + pd.Timedelta(days=1)
+    return data

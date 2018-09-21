@@ -1,7 +1,11 @@
+from logbook import Logger, StreamHandler
 import pandas as pd
 from zipline.data.bundles import register
 from zipline.data.bundles.csvdir import csvdir_equities
 
+handler = StreamHandler(sys.stdout, format_string=" | {record.message}")
+logger = Logger(__name__)
+logger.handlers.append(handler)
 
 #------------
 
@@ -16,19 +20,16 @@ from trading_calendars import get_calendar
 from zipline.assets.futures import CME_CODE_TO_MONTH
 from zipline.data.bundles import core as bundles
 
-def csvdir_futures(tframes, csvdir):
-    return CSVDIRFutures(tframes, csvdir).ingest
+def csvdir_futures(tframes=None, csvdir=None, quandl=False):
+    return CSVDIRFutures(tframes, csvdir, quandl).ingest
 
 
 class CSVDIRFutures:
-    """
-    Wrapper class to call csvdir_bundle with provided
-    list of time frames and a path to the csvdir directory
-    """
 
-    def __init__(self, tframes, csvdir):
+    def __init__(self, tframes=None, csvdir=None, quandl=False):
         self.tframes = tframes
         self.csvdir = csvdir
+        self.quandl = quandl
 
     def ingest(self,
                environ,
@@ -55,7 +56,8 @@ class CSVDIRFutures:
                        show_progress,
                        output_dir,
                        self.tframes,
-                       self.csvdir)
+                       self.csvdir,
+                       self.quandl)
 
 
 def third_friday(year, month):
@@ -90,11 +92,26 @@ def load_data(parent_dir):
     big_df = pd.concat(df_list)
     big_df.columns = map(str.lower, big_df.columns)
     big_df.symbol = big_df.symbol.astype('str')
-    mask = big_df.symbol.str.len() == 5  # e.g., ESU18; doesn't work prior to year 2000
+    mask = big_df.symbol.str.len() == 5  # e.g., ESU18; doesn't work prior to year 2000; TODO: fix this! doesn't work for 1 or 3 letter root 
     return big_df.loc[mask]
 
+def load_quandl_cme(quandl_file):
+    big_df = pd.read_csv(
+        quandl_file,
+        names=['symbol', 'date', 'open', 'high', 'low', 'close',
+               'change', 'settle', 'volume', 'prev_day_open_int'],
+        parse_dates=[1]
+    )
 
-def gen_asset_metadata(data, show_progress, exchange='EXCH'):
+    big_df.symbol = big_df.symbol.astype('str').str.strip()
+    mask1 = ~big_df.symbol.str.contains('_')
+    mask2 = (big_df.symbol.str.len() <=8) # ZM2018, ESU2018, CPOF2018
+    mask3 = (big_df.date > pd.Timestamp('2000-01-01'))
+    return big_df[mask1 & mask2 & mask3]
+    
+
+
+def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
     if show_progress:
         log.info('Generating asset metadata.')
 
@@ -110,12 +127,36 @@ def gen_asset_metadata(data, show_progress, exchange='EXCH'):
     data.columns = data.columns.get_level_values(0)
 
     data['exchange'] = exchange
-    data['root_symbol'] = data.symbol.str.slice(0,2)
 
-    data['exp_month_letter'] = data.symbol.str.slice(2,3)
+    def quandl_symbol_split(symbol):
+        l = len(symbol)
+        year = int(symbol[l-4:l+1])
+        month_letter = symbol[l-5:l-4]
+        root_symbol = symbol[:l-5]
+        return root_symbol, month_letter, year
+
+    if quandl:
+        data['root_symbol'] = ''
+        data['exp_month_letter'] = ''
+        data['exp_year'] = np.nan
+
+        #data['root_symbol'], data['exp_month_letter'], data['exp_year'] = \
+        #    data.apply(lambda x: quandl_symbol_split(x.symbol), axis=1)
+        for index, row in data.iterrows():
+            a, b, c = quandl_symbol_split(row.symbol)
+            #print(
+            #    str(index) + ": " + str(a) + ":" + str(b) + ":" + str(c)
+            #)
+            data['root_symbol'], data['exp_month_letter'], data['exp_year'] = a,b,c
+        
+    else:
+        data['root_symbol'] = data.symbol.str.slice(0,2)
+        data['exp_month_letter'] = data.symbol.str.slice(2,3)
+        data['exp_year'] = 2000 + data.symbol.str.slice(3,5).astype('int')
+
     data['exp_month'] = data['exp_month_letter'].map(CME_CODE_TO_MONTH)
-    data['exp_year'] = 2000 + data.symbol.str.slice(3,5).astype('int')
     data['expiration_date'] = data.apply(lambda x: third_friday(x.exp_year, x.exp_month), axis=1)
+
     del data['exp_month_letter']
     del data['exp_month']
     del data['exp_year']
@@ -154,11 +195,29 @@ def futures_bundle(environ,
                    show_progress,
                    output_dir,
                    tframes=None,
-                   csvdir=None):
+                   csvdir=None,
+                   quandl=None):
 
-    import pdb; pdb.set_trace()
-    raw_data = load_data('/Users/jonathan/devwork/pricing_data/CME_2018')
-    asset_metadata = gen_asset_metadata(raw_data, False)
+    if not csvdir:
+        csvdir = environ.get('CSVDIR')
+        if not csvdir:
+            raise ValueError("CSVDIR environment variable is not set")
+
+    if not tframes:
+        tframes = set(["daily", "minute"]).intersection(os.listdir(csvdir))
+
+        if not tframes:
+            raise ValueError("'daily' and 'minute' directories "
+                             "not found in '%s'" % csvdir)
+    
+
+    #raw_data = load_data('/Users/jonathan/devwork/pricing_data/CME_2018')
+    if quandl:
+        raw_data = load_quandl_cme(csvdir)
+    else:
+        raw_data = load_data(csvdir)
+        
+    asset_metadata = gen_asset_metadata(raw_data, False, True)
     root_symbols = asset_metadata.root_symbol.unique()
     root_symbols = pd.DataFrame(root_symbols, columns = ['root_symbol'])
     root_symbols['root_symbol_id'] = root_symbols.index.values
@@ -189,15 +248,25 @@ def futures_bundle(environ,
 
 #-----------
 
-
 register(
     'futures',
     csvdir_futures(
         'daily',
-        '/Users/jonathan/devwork/pricing_data/CME_2018'
+        '/Users/jonathan/devwork/misc_research/zipline_install/CME_20180920.csv',
+        True
     ),
     calendar_name='CME',
 )
+
+
+#register(
+#    'futures',
+#    csvdir_futures(
+#        'daily',
+#        '/Users/jonathan/devwork/pricing_data/CME_2018'
+#    ),
+#    calendar_name='CME',
+#)
 
 
 start_session = pd.Timestamp('1991-01-02', tz='utc')

@@ -17,7 +17,6 @@ from zipline.assets.futures import CME_CODE_TO_MONTH
 from zipline.data.bundles import core as bundles
 
 def csvdir_futures(tframes, csvdir):
-    import pdb; pdb.set_trace()
     return CSVDIRFutures(tframes, csvdir).ingest
 
 
@@ -29,7 +28,7 @@ class CSVDIRFutures:
 
     def __init__(self, tframes, csvdir):
         self.tframes = tframes
-        self.csvdir = csvdirs
+        self.csvdir = csvdir
 
     def ingest(self,
                environ,
@@ -161,8 +160,11 @@ def futures_bundle(environ,
     import pdb; pdb.set_trace()
     raw_data = load_data('/Users/jonathan/devwork/pricing_data/CME_2018')
     asset_metadata = gen_asset_metadata(raw_data, False)
-
-    asset_db_writer.write(asset_metadata)
+    root_symbols = asset_metadata.root_symbol.unique()
+    root_symbols = pd.DataFrame(root_symbols, columns = ['root_symbol'])
+    root_symbols['root_symbol_id'] = root_symbols.index.values
+    
+    asset_db_writer.write(futures=asset_metadata, root_symbols=root_symbols)
 
     symbol_map = asset_metadata.symbol
     sessions = calendar.sessions_in_range(start_session, end_session)

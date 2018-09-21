@@ -1,7 +1,9 @@
 from logbook import Logger, StreamHandler
 import pandas as pd
+import sys
 from zipline.data.bundles import register
 from zipline.data.bundles.csvdir import csvdir_equities
+
 
 handler = StreamHandler(sys.stdout, format_string=" | {record.message}")
 logger = Logger(__name__)
@@ -106,7 +108,7 @@ def load_quandl_cme(quandl_file):
     big_df.symbol = big_df.symbol.astype('str').str.strip()
     mask1 = ~big_df.symbol.str.contains('_')
     mask2 = (big_df.symbol.str.len() <=8) # ZM2018, ESU2018, CPOF2018
-    mask3 = (big_df.date > pd.Timestamp('2000-01-01'))
+    mask3 = (big_df.date > pd.Timestamp('2015-01-01'))
     return big_df[mask1 & mask2 & mask3]
     
 

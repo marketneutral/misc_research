@@ -58,9 +58,8 @@ class CSVDIRFutures:
                        self.csvdir)
 
 
-
 def third_friday(year, month):
-    """Return datetime.date for monthly option expiration given year and
+    """Return datetime.date for monthly 3rd Friday expiration given year and
     month
     """
     # The 15th is the lowest third day in the month
@@ -163,6 +162,10 @@ def futures_bundle(environ,
     root_symbols = asset_metadata.root_symbol.unique()
     root_symbols = pd.DataFrame(root_symbols, columns = ['root_symbol'])
     root_symbols['root_symbol_id'] = root_symbols.index.values
+
+    # TODO: the root_symbols must have exchage
+    exch = asset_metadata.groupby('root_symbol')['exchange'].last(),
+    root_symbols['exchange'] = 'EXCH'  # hack
     
     asset_db_writer.write(futures=asset_metadata, root_symbols=root_symbols)
 
@@ -185,12 +188,6 @@ def futures_bundle(environ,
 
 
 #-----------
-
-
-
-
-
-
 
 
 register(

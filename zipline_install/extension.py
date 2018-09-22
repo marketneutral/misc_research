@@ -108,7 +108,7 @@ def load_quandl_cme(quandl_file):
     big_df.symbol = big_df.symbol.astype('str').str.strip()
     mask1 = ~big_df.symbol.str.contains('_')
     mask2 = (big_df.symbol.str.len() <=8) # ZM2018, ESU2018, CPOF2018
-    mask3 = (big_df.date > pd.Timestamp('2015-01-01'))
+    mask3 = (big_df.date > pd.Timestamp('2018-01-01'))
     return big_df[mask1 & mask2 & mask3]
     
 
@@ -149,7 +149,7 @@ def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
             #print(
             #    str(index) + ": " + str(a) + ":" + str(b) + ":" + str(c)
             #)
-            data['root_symbol'], data['exp_month_letter'], data['exp_year'] = a,b,c
+            data.iloc[index]['root_symbol'], data.iloc[index]['exp_month_letter'], data.ilocc[index]['exp_year'] = a,b,c
         
     else:
         data['root_symbol'] = data.symbol.str.slice(0,2)
@@ -218,7 +218,8 @@ def futures_bundle(environ,
         raw_data = load_quandl_cme(csvdir)
     else:
         raw_data = load_data(csvdir)
-        
+
+    import pdb; pdb.set_trace()
     asset_metadata = gen_asset_metadata(raw_data, False, True)
     root_symbols = asset_metadata.root_symbol.unique()
     root_symbols = pd.DataFrame(root_symbols, columns = ['root_symbol'])

@@ -149,7 +149,7 @@ def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
             #print(
             #    str(index) + ": " + str(a) + ":" + str(b) + ":" + str(c)
             #)
-            data.iloc[index]['root_symbol'], data.iloc[index]['exp_month_letter'], data.ilocc[index]['exp_year'] = a,b,c
+            data.iloc[index]['root_symbol'], data.iloc[index]['exp_month_letter'], data.iloc[index]['exp_year'] = a,b,c
         
     else:
         data['root_symbol'] = data.symbol.str.slice(0,2)

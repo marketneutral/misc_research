@@ -149,7 +149,7 @@ def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
             #print(
             #    str(index) + ": " + str(a) + ":" + str(b) + ":" + str(c)
             #)
-            data.iloc[index]['root_symbol'], data.iloc[index]['exp_month_letter'], data.iloc[index]['exp_year'] = a,b,c
+            data.loc[index, 'root_symbol'], data.loc[index, 'exp_month_letter'], data.loc[index, 'exp_year'] = a, b, c
         
     else:
         data['root_symbol'] = data.symbol.str.slice(0,2)
@@ -255,7 +255,8 @@ register(
     'futures',
     csvdir_futures(
         'daily',
-        '/Users/jonathan/devwork/misc_research/zipline_install/CME_20180920.csv',
+#        '/Users/jonathan/devwork/misc_research/zipline_install/CME_20180920.csv',
+        '/Users/jonathan/devwork/misc_research/zipline_install/CME_small_20180920.csv',
         True
     ),
     calendar_name='CME',

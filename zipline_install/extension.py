@@ -108,8 +108,8 @@ def load_quandl_cme(quandl_file):
     big_df.symbol = big_df.symbol.astype('str').str.strip()
     mask1 = ~big_df.symbol.str.contains('_')
     mask2 = (big_df.symbol.str.len() <=8) # ZM2018, ESU2018, CPOF2018
-    mask3 = (big_df.date > pd.Timestamp('2018-01-01'))
-    return big_df[mask1 & mask2 & mask3]
+    #mask3 = (big_df.date > pd.Timestamp('2018-01-01'))
+    return big_df[mask1 & mask2]
     
 
 
@@ -138,9 +138,9 @@ def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
         return root_symbol, month_letter, year
 
     if quandl:
-        data['root_symbol'] = ''
-        data['exp_month_letter'] = ''
-        data['exp_year'] = np.nan
+        data=data.assign(root_symbol='')
+        data=data.assign(exp_month_letter= '')
+        data=data.assign(exp_year=-1)
 
         #data['root_symbol'], data['exp_month_letter'], data['exp_year'] = \
         #    data.apply(lambda x: quandl_symbol_split(x.symbol), axis=1)
@@ -259,6 +259,8 @@ register(
         '/Users/jonathan/devwork/misc_research/zipline_install/CME_small_20180920.csv',
         True
     ),
+    start_session=pd.Timestamp('2016-01-04', tz='utc'),
+    end_session=pd.Timestamp('2018-09-20', tz='utc'),
     calendar_name='CME',
 )
 

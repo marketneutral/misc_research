@@ -12,9 +12,10 @@ log = Logger('Algorithm')
 
 
 def initialize(context):
-    context.my_cf = continuous_future('SP')
+    context.my_cf = continuous_future('CL')
 
         
 def handle_data(context, data):
     contract = data.current(context.my_cf, 'contract')
+    order_target_percent(contract, 1.0)
     log.info(contract)

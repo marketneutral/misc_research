@@ -213,13 +213,11 @@ def futures_bundle(environ,
                              "not found in '%s'" % csvdir)
     
 
-    #raw_data = load_data('/Users/jonathan/devwork/pricing_data/CME_2018')
     if quandl:
         raw_data = load_quandl_cme(csvdir)
     else:
         raw_data = load_data(csvdir)
 
-    import pdb; pdb.set_trace()
     asset_metadata = gen_asset_metadata(raw_data, False, True)
     root_symbols = asset_metadata.root_symbol.unique()
     root_symbols = pd.DataFrame(root_symbols, columns = ['root_symbol'])
@@ -247,19 +245,17 @@ def futures_bundle(environ,
 
 
 
-
-
 #-----------
 
 register(
     'futures',
     csvdir_futures(
         'daily',
-#        '/Users/jonathan/devwork/misc_research/zipline_install/CME_20180920.csv',
-        '/Users/jonathan/devwork/misc_research/zipline_install/CME_small_20180920.csv',
+        '/Users/jonathan/devwork/misc_research/zipline_install/CME_cut_20180920.csv',
+#        '/Users/jonathan/devwork/misc_research/zipline_install/CME_small_20180920.csv',
         True
     ),
-    start_session=pd.Timestamp('2016-01-04', tz='utc'),
+    start_session=pd.Timestamp('2007-01-03', tz='utc'),
     end_session=pd.Timestamp('2018-09-20', tz='utc'),
     calendar_name='CME',
 )

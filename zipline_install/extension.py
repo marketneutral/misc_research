@@ -22,6 +22,20 @@ from trading_calendars import get_calendar
 from zipline.assets.futures import CME_CODE_TO_MONTH
 from zipline.data.bundles import core as bundles
 
+MULTIPLIERS = {
+    'CL': 1000,  # Crude Oil
+    'US': 1000,  # Long Bond
+    'FV': 1000,  # Five Year
+    'TY': 1000,  # Ten Year
+    'ED': 2500,  # Eurodollar
+    'ES': 50,    # E-mini
+    'TU': 2000,  # 2-Year
+    'GC': 100,   # Gold
+    'FF': 4167,  # Fed Funds
+    'SP': 250,   # SP500 Bigs
+}
+
+
 def csvdir_futures(tframes=None, csvdir=None, quandl=False):
     return CSVDIRFutures(tframes, csvdir, quandl).ingest
 
@@ -98,6 +112,18 @@ def load_data(parent_dir):
     return big_df.loc[mask]
 
 def load_quandl_cme(quandl_file):
+    """
+    The Quandl CME file contains both settlement price and close price.
+    The settlment price is (typically) the vwap around the close of the
+    regular pit trading session. The "close" is last traded on the day, 
+    presumably in the Globex session. There are many many NaNs in the
+    close price. This ingest, uses the "settlement price" as the resulting
+    bundle's "close" price. This makes the "close" potentially out of time
+    with the low and the high. However there are many NaNs in the low and
+    the high as well, so avoid those. Zipline assumes there are no NaNs
+    anywhere in the data and it's behavior is unpredictible when it
+    encounters a NaN.
+    """
     big_df = pd.read_csv(
         quandl_file,
         names=['symbol', 'date', 'open', 'high', 'low', 'close',
@@ -105,12 +131,19 @@ def load_quandl_cme(quandl_file):
         parse_dates=[1]
     )
 
+    big_df.rename(
+        columns={
+            'close': 'globex_close',
+            'settle': 'close'
+        },
+        inplace=True
+    )
+    
     big_df.symbol = big_df.symbol.astype('str').str.strip()
     mask1 = ~big_df.symbol.str.contains('_')
     mask2 = (big_df.symbol.str.len() <=8) # ZM2018, ESU2018, CPOF2018
     #mask3 = (big_df.date > pd.Timestamp('2018-01-01'))
     return big_df[mask1 & mask2]
-    
 
 
 def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
@@ -167,9 +200,10 @@ def gen_asset_metadata(data, show_progress, quandl=False, exchange='EXCH'):
     data['notice_date'] = data['auto_close_date']
 
     data['tick_size'] = 0.0001   # Placeholder for now
-    data['multiplier'] = 1       # Placeholder for now
+    data['multiplier'] = data['root_symbol'].map(MULTIPLIERS).fillna(1)
     
-    return data
+    # We need to sort so that continuous futures work!
+    return data.sort_values(by='auto_close_date').reset_index(drop=True)
 
 def parse_pricing_and_vol(data,
                           sessions,
@@ -229,6 +263,17 @@ def futures_bundle(environ,
     
     asset_db_writer.write(futures=asset_metadata, root_symbols=root_symbols)
 
+    # We need to create empty tables, or else zipline orders don't work;
+    # Zipline looks for an adjustment for all assets
+    divs_splits = {'divs': pd.DataFrame(columns=['sid', 'amount',
+                                                 'ex_date', 'record_date',
+                                                 'declared_date', 'pay_date']),
+                   'splits': pd.DataFrame(columns=['sid', 'ratio',
+                                                   'effective_date'])}
+    adjustment_writer.write(splits=divs_splits['splits'],
+                            dividends=divs_splits['divs'])
+
+    
     symbol_map = asset_metadata.symbol
     sessions = calendar.sessions_in_range(start_session, end_session)
     raw_data.set_index(['date', 'symbol'], inplace=True)
@@ -251,8 +296,8 @@ register(
     'futures',
     csvdir_futures(
         'daily',
+        #'/Users/jonathan/devwork/misc_research/zipline_install/CME_CL_20180920.csv',
         '/Users/jonathan/devwork/misc_research/zipline_install/CME_cut_20180920.csv',
-#        '/Users/jonathan/devwork/misc_research/zipline_install/CME_small_20180920.csv',
         True
     ),
     start_session=pd.Timestamp('2007-01-03', tz='utc'),

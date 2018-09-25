@@ -1,4 +1,4 @@
-from zipline.api import symbol, order_target_percent, record, future_symbol, continuous_future
+from zipline.api import symbol, order_target_percent, record, future_symbol, continuous_future, get_datetime
 
 from logbook import Logger, StderrHandler, DEBUG, INFO
 
@@ -16,5 +16,6 @@ def initialize(context):
     pass
         
 def handle_data(context, data):
-    fut = future_symbol('A6F18')
-    log.info(data.current(fut, 'close'))
+    #fut = future_symbol('A6F18')
+    #log.info(data.current(fut, 'close'))
+    log.info(get_datetime())

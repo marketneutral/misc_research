@@ -12,12 +12,12 @@ log = Logger('Algorithm')
 
 
 def initialize(context):
-    context.my_cf = continuous_future('CL')
+    context.my_cf = continuous_future('US')
         
 def handle_data(context, data):
     contract = data.current(context.my_cf, 'contract')
     log.info(contract)
-    log.info(get_datetime)
+    log.info(get_datetime())
     x = data.current(contract, 'price')
     log.info(x)
    # order_target(contract, 10)

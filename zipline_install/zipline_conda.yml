@@ -7,8 +7,10 @@ dependencies:
 - Quantopian::zipline==1.3.0
 - pandas-datareader==0.2.1
 - seaborn==0.9.0
+- scikit-learn==0.19.2
 - pip:
   - ipykernel
   - graphviz
   - quandl
   - tqdm
+  - pyfolio==0.9.0

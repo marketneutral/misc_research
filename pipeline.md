@@ -18,6 +18,7 @@ $$y = mx + b$$
 
 ## Lectures ##
 
+- [3blue1brown Linear Algebra](). 
 - [Owen Zhang](https://www.kaggle.com/owenzhang1) talk at NYC Data Academy ([link](https://www.youtube.com/watch?v=LgLcfZjNF44)). Key ideas on model stacking (using glm on sparse and then feeding into xgb); using leave-one-out target encoding for high cardinality categorical variables; gbm tuning.
 - [raddar]() My Journey to Kaggle Grandmasster, Kaggle Days talk [link](https://www.youtube.com/watch?v=7XEMPU17-Wo).
 - [CPMP]() Beyond Feature Engineering and HPO, Kaggle Days talk [link](https://www.youtube.com/watch?v=fH_FiquKhiI).

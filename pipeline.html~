@@ -1,0 +1,71 @@
+<h1 id="machine-learning-plan">Machine Learning Plan</h1>
+<h2 id="classes">Classes</h2>
+<ul>
+<li>Introduction to Machine Learning for Coders, fast.ai [DONE]</li>
+<li>Deep Learning, fast.ai [in progress]</li>
+<li>Computational Linear Algebra, fast.ai [TBD]</li>
+<li><a href="https://mlcourse.ai/">mlcourse.ai</a> [Schedule to start Sept 9, 2019]</li>
+</ul>
+<h2 id="reading">Reading</h2>
+<ul>
+<li>Deep Learning Book, <a href="http://www.deeplearningbook.org/">math prerequesites</a>. [TBD]</li>
+<li>Feature Engineering Talk, <a href="https://www.slideshare.net/HJvanVeen/feature-engineering-72376750">slides link</a>. [TBD]</li>
+</ul>
+<h2 id="lectures">Lectures</h2>
+<ul>
+<li><a href="https://www.kaggle.com/owenzhang1">Owen Zhang</a> talk at NYC Data Academy (<a href="https://www.youtube.com/watch?v=LgLcfZjNF44">link</a>). Key ideas on model stacking (using glm on sparse and then feeding into xgb); using leave-one-out target encoding for high cardinality categorical variables; gbm tuning.</li>
+<li><a href="">raddar</a> My Journey to Kaggle Grandmasster, Kaggle Days talk <a href="https://www.youtube.com/watch?v=7XEMPU17-Wo">link</a>.</li>
+<li><a href="">CPMP</a> Beyond Feature Engineering and HPO, Kaggle Days talk <a href="https://www.youtube.com/watch?v=fH_FiquKhiI">link</a>.</li>
+<li>Vincent W. Winning with Linear Models <a href="https://www.youtube.com/watch?v=68ABAU_V8qI">link</a>.</li>
+<li>Vincent W. The Duct Tape of Heroes (Bayesian stats; pomegranate) <a href="https://www.youtube.com/watch?v=dE5j6NW-Kzg">link</a>.</li>
+</ul>
+<h1 id="machine-learning-pipeline">Machine Learning Pipeline</h1>
+<h2 id="eda">EDA</h2>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> pandas_profiling <span class="im">import</span> ProfileReport</code></pre></div>
+<h2 id="data-cleaning">Data Cleaning</h2>
+<ul>
+<li><code>pyjanitor</code> <a href="https://github.com/ericmjl/pyjanitor" class="uri">https://github.com/ericmjl/pyjanitor</a></li>
+</ul>
+<h2 id="baseline-random-model">Baseline Random Model</h2>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor
+<span class="im">from</span> sklearn.metrics <span class="im">import</span> make_scorer
+scorer <span class="op">=</span> make_scorer(mean_squared_error)
+scores_dummy <span class="op">=</span> cross_val_score(baseline, train_df.values, y, cv<span class="op">=</span>RepeatedKFold(n_repeats<span class="op">=</span><span class="dv">100</span>), scoring<span class="op">=</span>scorer)</code></pre></div>
+<h2 id="feature-importance-and-explanability">Feature Importance and Explanability</h2>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> eli5.sklearn <span class="im">import</span> PermutationImportance</code></pre></div>
+<ul>
+<li><code>tree_iterpreter</code></li>
+<li><code>shap</code></li>
+<li>Jeremy's dendrogram code to inspect for redundant features</li>
+<li>Jeremy's RF code to see if feature can predict if a sample is in/out of the test set. If it can, this means that</li>
+</ul>
+<h2 id="feature-engineering-and-encoding">Feature Engineering and Encoding</h2>
+<ul>
+<li>Category Encoding <a href="http://contrib.scikit-learn.org/categorical-encoding/index.html" class="uri">http://contrib.scikit-learn.org/categorical-encoding/index.html</a></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> category_encoders <span class="im">as</span> ce
+encoder <span class="op">=</span> ce.LeaveOneOutEncoder(cols<span class="op">=</span>[...])
+encoder.fit(X, y)
+X_cleaned <span class="op">=</span> encoder.transform(X_dirty)</code></pre></div>
+<h2 id="imputing">Imputing</h2>
+<pre class="{.python}"><code>from fancyimpute import KNN
+X_filled_knn = KNN(k=3).fit_transform(X_incomplete)</code></pre>
+<h2 id="imbalanced-data-and-data-augmentation">Imbalanced Data and Data Augmentation</h2>
+<ul>
+<li><a href="https://imbalanced-learn.org/en/stable/index.html" class="uri">https://imbalanced-learn.org/en/stable/index.html</a></li>
+</ul>
+<h2 id="scaling-and-outlier-handling">Scaling and Outlier Handling</h2>
+<h2 id="model-stacking">Model Stacking</h2>
+<ul>
+<li><code>vectack</code> package compat with <code>sklearn</code> api, <a href="https://github.com/vecxoz/vecstack" class="uri">https://github.com/vecxoz/vecstack</a></li>
+</ul>
+<h2 id="hyperparameter-optimzation">Hyperparameter Optimzation</h2>
+<ul>
+<li><code>BayesOptCV</code></li>
+</ul>
+<h2 id="blending">Blending</h2>
+<h2 id="using-neptune">Using Neptune</h2>
+<h1 id="bayesian-learning">Bayesian Learning</h1>
+<ul>
+<li></li>
+</ul>

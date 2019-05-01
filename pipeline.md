@@ -1,5 +1,8 @@
+View in JupyterLab with *Open With &rarr; Markdown Preview*.
+
 # Machine Learning Plan #
-   
+
+$$y = mx + b$$
 
 ## Classes ##
 

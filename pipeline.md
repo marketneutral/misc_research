@@ -24,6 +24,7 @@ $$y = mx + b$$
 - [3blue1brown Linear Algebra](). 
 - [Owen Zhang](https://www.kaggle.com/owenzhang1) talk at NYC Data Academy ([link](https://www.youtube.com/watch?v=LgLcfZjNF44)). Key ideas on model stacking (using glm on sparse and then feeding into xgb); using leave-one-out target encoding for high cardinality categorical variables; gbm tuning.
 - [raddar]() My Journey to Kaggle Grandmasster, Kaggle Days talk [link](https://www.youtube.com/watch?v=7XEMPU17-Wo).
+- [raddar]() NCAA March Madness competition 1st place model approach; paris madness kernel. [link](https://www.youtube.com/watch?v=i4JDcfKR6fE)
 - [CPMP]() Beyond Feature Engineering and HPO, Kaggle Days talk [link](https://www.youtube.com/watch?v=fH_FiquKhiI).
 - Vincent W. Winning with Linear Models [link](https://www.youtube.com/watch?v=68ABAU_V8qI).
 - Vincent W. The Duct Tape of Heroes (Bayesian stats; pomegranate) [link](https://www.youtube.com/watch?v=dE5j6NW-Kzg).
@@ -106,6 +107,10 @@ X_filled_knn = KNN(k=3).fit_transform(X_incomplete)
 
 ## Model Stacking ##
 - `vectack` package compat with `sklearn` api,  https://github.com/vecxoz/vecstack
+
+
+## Cross Validation
+
 
 
 ## Hyperparameter Optimzation ##

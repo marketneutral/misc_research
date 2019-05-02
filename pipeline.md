@@ -29,6 +29,7 @@ $$y = mx + b$$
 - Vincent W. The Duct Tape of Heroes (Bayesian stats; pomegranate) [link](https://www.youtube.com/watch?v=dE5j6NW-Kzg).
 - Szilard, @datascienceLA, On Machine Learning Software [link](http://videolectures.net/kdd2017_pafka_machine_learning_software/).
 - Szilard, @datascienceLA, Better than Deep Learning: GBM [link](https://www.youtube.com/watch?v=9GCEVv94udY)
+- Tianqi Chen, XGBoost: A Scaleable Tree Boosting System, June 2016 talk at DataScienceLA [link](https://www.youtube.com/watch?v=9GCEVv94udY)
 
 
 

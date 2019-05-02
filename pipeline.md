@@ -60,7 +60,10 @@ scores_dummy = cross_val_score(baseline, train_df.values, y, cv=RepeatedKFold(n_
 ## Feature Importance and Explanability ##
 
 ```python
+from eli5 import show_weights
 from eli5.sklearn import PermutationImportance
+perm = PermutationImportance(model, random_state=1).fit(X_train, y_train)
+show_weights(perm, top=50, feature_names=top_columns)
 ```
 
 - `tree_iterpreter`

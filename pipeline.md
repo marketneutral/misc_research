@@ -4,6 +4,7 @@ View in JupyterLab with *Open With &rarr; Markdown Preview*.
 
 $$y = mx + b$$
 
+
 ## Classes ##
 
 - Introduction to Machine Learning for Coders, fast.ai [DONE]
@@ -11,10 +12,12 @@ $$y = mx + b$$
 - Computational Linear Algebra, fast.ai [TBD]
 - [mlcourse.ai](https://mlcourse.ai/) [Schedule to start Sept 9, 2019]
 
+
 ## Reading ##
 
 - Deep Learning Book, [math prerequesites](http://www.deeplearningbook.org/). [TBD]
 - Feature Engineering Talk, [slides link](https://www.slideshare.net/HJvanVeen/feature-engineering-72376750). [TBD]
+
 
 ## Lectures ##
 
@@ -24,6 +27,8 @@ $$y = mx + b$$
 - [CPMP]() Beyond Feature Engineering and HPO, Kaggle Days talk [link](https://www.youtube.com/watch?v=fH_FiquKhiI).
 - Vincent W. Winning with Linear Models [link](https://www.youtube.com/watch?v=68ABAU_V8qI).
 - Vincent W. The Duct Tape of Heroes (Bayesian stats; pomegranate) [link](https://www.youtube.com/watch?v=dE5j6NW-Kzg).
+- Szilard, @datascienceLA, On Machine Learning Software [link](http://videolectures.net/kdd2017_pafka_machine_learning_software/).
+- Szilard, @datascienceLA, Better than Deep Learning: GBM [link](https://www.youtube.com/watch?v=9GCEVv94udY)
 
 
 
@@ -109,6 +114,11 @@ X_filled_knn = KNN(k=3).fit_transform(X_incomplete)
 
 ## Using Neptune ##
 
+
+
+# AutoML #
+
+- Kaggle Days SF h2o, AutoML gets 8th place on Hackathon [link](https://gist.github.com/ledell/4d4cd24b6a993a47069c511ba86b05bd)
 
 
 # Bayesian Learning #
